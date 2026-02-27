@@ -1,9 +1,9 @@
-name: Build Android Library
+name: Build Overlay Library
 
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:  # позволяет запускать вручную
+  workflow_dispatch:
 
 jobs:
   build:
@@ -23,18 +23,18 @@ jobs:
           
           # Компиляция
           $TOOLCHAIN/aarch64-linux-android21-clang \
-            -c mod_toast.cpp \
+            -c mod_overlay.cpp \
             -fPIC \
-            -o mod_toast.o
+            -o mod_overlay.o
           
           # Линковка
           $TOOLCHAIN/aarch64-linux-android21-clang \
             -shared \
-            mod_toast.cpp \
-            -o libmod.so
+            mod_overlay.cpp \
+            -o liboverlaymod.so
           
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: libmod-arm64-v8a
-          path: libmod.so
+          name: liboverlaymod-arm64-v8a
+          path: liboverlaymod.so
