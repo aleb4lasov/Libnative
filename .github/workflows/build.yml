@@ -21,16 +21,18 @@ jobs:
           export NDK_PATH=$ANDROID_NDK_HOME
           export TOOLCHAIN=$NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin
           
-          # Компиляция
+          # Компиляция с правильными флагами
           $TOOLCHAIN/aarch64-linux-android21-clang \
             -c mod_overlay.cpp \
             -fPIC \
+            -I$NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include \
             -o mod_overlay.o
           
-          # Линковка
+          # Линковка с библиотекой log
           $TOOLCHAIN/aarch64-linux-android21-clang \
             -shared \
-            mod_overlay.cpp \
+            mod_overlay.o \
+            -llog \
             -o liboverlaymod.so
           
       - name: Upload artifact
