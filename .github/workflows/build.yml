@@ -1,0 +1,40 @@
+name: Build Android Library
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:  # позволяет запускать вручную
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup NDK
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r25c
+          
+      - name: Compile for arm64-v8a
+        run: |
+          export NDK_PATH=$ANDROID_NDK_HOME
+          export TOOLCHAIN=$NDK_PATH/toolchains/llvm/prebuilt/linux-x86_64/bin
+          
+          # Компиляция
+          $TOOLCHAIN/aarch64-linux-android21-clang \
+            -c mod_toast.cpp \
+            -fPIC \
+            -o mod_toast.o
+          
+          # Линковка
+          $TOOLCHAIN/aarch64-linux-android21-clang \
+            -shared \
+            mod_toast.cpp \
+            -o libmod.so
+          
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: libmod-arm64-v8a
+          path: libmod.so
